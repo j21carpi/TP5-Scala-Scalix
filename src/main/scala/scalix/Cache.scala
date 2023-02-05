@@ -1,0 +1,5 @@
+package scalix
+
+class Cache {
+
+}
