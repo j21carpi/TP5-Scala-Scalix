@@ -5,9 +5,12 @@
 
 **Auteur** : Pierre Lafon et Jules Carpio   
 **Professeur** : Jacques Noyé  
-**Destination** : Mont Oros (Métaphore du surpassement de soi)
+**Destination** : Mont Oros (Métaphore du surpassement de soi)  
 **Nom du cours** : Programmation multi-paradigme avec Scala  
 **Date mise à jour** : 04/02/2023  
+
+Nous avons développer des fichiers de test si vous voulez voir nos resultats.  
+N'hésitez pas à supprimer les fichiers json pour voir la création de fichier.
 
 ### Indication sur le code Scalix :
 
@@ -68,4 +71,4 @@ findActorIdCache.memoize(actor)
 
 ### Indication Quizz :
 
-Pas développé, il aurait fallut charger plusieurs collaboration et uriliser des listes en compréhension.   
+Partie non développée, il aurait fallut charger plusieurs collaboration et uriliser des listes en compréhension.   
