@@ -1,0 +1,3 @@
+class Scalix2Test {
+
+}

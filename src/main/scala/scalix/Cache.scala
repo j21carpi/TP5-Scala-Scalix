@@ -1,5 +1,0 @@
-package scalix
-
-class Cache {
-
-}
