@@ -3,10 +3,10 @@ package scalix2.services
 import scala.io.Source
 import org.json4s.*
 import org.json4s.native.JsonMethods.*
-import scalix.FullName
 import scalix.Memoization.memoize
 import scalix.Scalix.{extractActorId, extractActorMovies, extractMovieDirector, getContents}
-import scalix2.services.CacheFile.{findActorMoviesDoubleCache, findMovieDirectorDoubleCache}
+import scalix2.models.FullName
+import scalix2.services.CacheFile.{findActorIdCache, findActorMoviesDoubleCache, findMovieDirectorDoubleCache}
 
 import java.io.PrintWriter
 
@@ -20,14 +20,13 @@ object Service extends App {
   /**
    * Permet de récupérer l'Id de l'acteur selon son nom et prénom
    *
-   * @param name    String
-   * @param surname String
+   * @param actor FullName
    * @return Option[Int]
    */
-  def findActorId(name: String, surname: String): Option[Int] = {
-    val contents = getContents(s"https://api.themoviedb.org/3/search/person?api_key=$api_key&query=$name%20$surname")
+  def findActorId(actor : FullName): Option[Int] = {
+    val contents = getContents(s"https://api.themoviedb.org/3/search/person?api_key=$api_key&query=${actor.name}%20${actor.surname}")
     val json = parse(contents)
-    extractActorId(json, name, surname)
+    extractActorId(json, actor)
   }
 
   /**
@@ -54,6 +53,36 @@ object Service extends App {
     extractMovieDirector(json)
   }
 
+  /**
+   * Permet d'avoir les films communs aux deux acteurs
+   *
+   * @param actor1 Fullname
+   * @param actor2 Fullname
+   * @return Set[(String, String)]
+   */
+  def collaboration(actor1: FullName, actor2: FullName): Set[(String, String)] = {
+    val actor1Id = findActorId(actor1)
+    if (actor1Id.isDefined) {
+      val actor1Movies = findActorMovies(actor1Id.get)
+      val actor2Id = findActorId(actor2)
+      if (actor2Id.isDefined) {
+        val actor2Movies = findActorMovies(actor2Id.get)
+        val sharedMovies = actor1Movies.intersect(actor2Movies)
+        sharedMovies.map { case (movieId, movieTitle) =>
+          val director = findMovieDirector(movieId)
+          if (director.isDefined) {
+            (director.get._2, movieTitle)
+          } else {
+            ("", "")
+          }
+        }.toSet
+      } else {
+        Set.empty[(String, String)]
+      }
+    } else {
+      Set.empty[(String, String)]
+    }
+  }
 
   /* ------------ Fonctions pour manipuler les données ------------- */
 
@@ -77,11 +106,11 @@ object Service extends App {
    * @param surname String
    * @return Option[Int]
    */
-  def extractActorId(json: JValue, name: String, surname: String): Option[Int] = {
+  def extractActorId(json: JValue, actor : FullName): Option[Int] = {
     Option(json \ "results") match {
       case Some(results) =>
         results.find { result =>
-          (result \ "name").extractOpt[String].contains(s"$name $surname")
+          (result \ "name").extractOpt[String].contains(s"${actor.name} ${actor.surname}")
         } match {
           case Some(result) =>
             (result \ "id").extractOpt[Int]

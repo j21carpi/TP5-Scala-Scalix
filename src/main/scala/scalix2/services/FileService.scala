@@ -9,7 +9,6 @@ import scalix2.config.Config.API_KEY
 
 object FileService extends App{
 
-
   /* ------------ Fonctions pour la cache secondaire ---------------- */
 
   /**
